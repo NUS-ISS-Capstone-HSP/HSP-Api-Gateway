@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package order.v1;
+
+enum ServiceType {
+  SERVICE_TYPE_UNSPECIFIED = 0;
+  SERVICE_TYPE_CLEANING = 1;
+  SERVICE_TYPE_REPAIR = 2;
+  SERVICE_TYPE_INSTALL = 3;
+  SERVICE_TYPE_OTHER = 4;
+}
+
+enum OrderStatus {
+  ORDER_STATUS_UNSPECIFIED = 0;
+  ORDER_STATUS_CREATED = 1;
+  ORDER_STATUS_PENDING = 2;
+  ORDER_STATUS_ACCEPT = 3;
+  ORDER_STATUS_COMPLETE = 4;
+  ORDER_STATUS_PAID = 5;
+}
+
+message Order {
+  string order_id = 1;
+  string customer_name = 2;
+  string phone = 3;
+  string service_address = 4;
+  ServiceType service_type = 5;
+  string appointment_time = 6;
+  int32 estimated_duration_minutes = 7;
+  OrderStatus status = 8;
+  string assigned_worker_id = 9;
+  string status_updated_at = 10;
+  string created_at = 11;
+  string updated_at = 12;
+}
+
+message CreateOrderRequest {
+  string customer_name = 1;
+  string phone = 2;
+  string service_address = 3;
+  ServiceType service_type = 4;
+  string appointment_time = 5;
+  int32 estimated_duration_minutes = 6;
+}
+
+message CreateOrderResponse {
+  Order order = 1;
+}
+
+message GetOrderRequest {
+  string order_id = 1;
+}
+
+message GetOrderResponse {
+  Order order = 1;
+}
+
+message ListOrdersRequest {
+  string customer_name = 1;
+  ServiceType service_type = 2;
+  OrderStatus status = 3;
+  int32 page = 4;
+  int32 page_size = 5;
+}
+
+message ListOrdersResponse {
+  repeated Order items = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+  int32 total = 4;
+}
+
+message UpdateOrderStatusRequest {
+  string order_id = 1;
+  OrderStatus target_status = 2;
+  string assigned_worker_id = 3;
+}
+
+message UpdateOrderStatusResponse {
+  Order order = 1;
+}
+
+service OrderService {
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+  rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
+  rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse);
+  rpc UpdateOrderStatus(UpdateOrderStatusRequest) returns (UpdateOrderStatusResponse);
+}

@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package dispatch.v1;
+
+message Worker {
+  string worker_id = 1;
+  string name = 2;
+  repeated string skills = 3;
+  string status = 4;
+}
+
+message DispatchRecord {
+  string dispatch_id = 1;
+  string order_id = 2;
+  int32 attempt_no = 3;
+  string worker_id = 4;
+  string operator_id = 5;
+  string status = 6;
+  string assigned_at = 7;
+  string responded_at = 8;
+  string reject_reason = 9;
+}
+
+message ListAvailableWorkersRequest {
+  string service_type = 1;
+  string region = 2;
+  string at_time = 3;
+  int32 limit = 4;
+}
+
+message ListAvailableWorkersResponse {
+  repeated Worker workers = 1;
+}
+
+message ManualAssignOrderRequest {
+  string order_id = 1;
+  string worker_id = 2;
+}
+
+message ManualAssignOrderResponse {
+  DispatchRecord dispatch = 1;
+}
+
+message ListWorkerPendingDispatchesRequest {}
+
+message ListWorkerPendingDispatchesResponse {
+  repeated DispatchRecord dispatches = 1;
+}
+
+enum WorkerResponseType {
+  WORKER_RESPONSE_TYPE_UNSPECIFIED = 0;
+  WORKER_RESPONSE_TYPE_ACCEPT = 1;
+  WORKER_RESPONSE_TYPE_REJECT = 2;
+}
+
+message ConfirmWorkerResponseRequest {
+  string dispatch_id = 1;
+  WorkerResponseType response = 3;
+  string reject_reason = 4;
+}
+
+message ConfirmWorkerResponseResponse {
+  DispatchRecord dispatch = 1;
+}
+
+message GetOrderDispatchHistoryRequest {
+  string order_id = 1;
+}
+
+message GetOrderDispatchHistoryResponse {
+  repeated DispatchRecord dispatches = 1;
+}
+
+service DispatchService {
+  rpc ListAvailableWorkers(ListAvailableWorkersRequest) returns (ListAvailableWorkersResponse);
+  rpc ManualAssignOrder(ManualAssignOrderRequest) returns (ManualAssignOrderResponse);
+  rpc ListWorkerPendingDispatches(ListWorkerPendingDispatchesRequest) returns (ListWorkerPendingDispatchesResponse);
+  rpc ConfirmWorkerResponse(ConfirmWorkerResponseRequest) returns (ConfirmWorkerResponseResponse);
+  rpc GetOrderDispatchHistory(GetOrderDispatchHistoryRequest) returns (GetOrderDispatchHistoryResponse);
+}

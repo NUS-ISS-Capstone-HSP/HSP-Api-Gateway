@@ -1,0 +1,77 @@
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hsp-api-gateway
+    env_file:
+      - .env
+    ports:
+      - "8081:8081"
+    depends_on:
+      - user-service
+      - order-service
+      - dispatch-service
+      - worker-schedule-service
+      - finance-service
+    networks:
+      - hsp-net
+
+  user-service:
+    build:
+      context: .
+      dockerfile: mock_services/Dockerfile
+    environment:
+      SERVICE_NAME: user-service
+      SERVICE_FULL_NAME: user.v1.UserAuthService
+      GRPC_PORT: 50051
+    networks:
+      - hsp-net
+
+  order-service:
+    build:
+      context: .
+      dockerfile: mock_services/Dockerfile
+    environment:
+      SERVICE_NAME: order-service
+      SERVICE_FULL_NAME: order.v1.OrderService
+      GRPC_PORT: 50051
+    networks:
+      - hsp-net
+
+  dispatch-service:
+    build:
+      context: .
+      dockerfile: mock_services/Dockerfile
+    environment:
+      SERVICE_NAME: dispatch-service
+      SERVICE_FULL_NAME: dispatch.v1.DispatchService
+      GRPC_PORT: 50051
+    networks:
+      - hsp-net
+
+  worker-schedule-service:
+    build:
+      context: .
+      dockerfile: mock_services/Dockerfile
+    environment:
+      SERVICE_NAME: worker-schedule-service
+      SERVICE_FULL_NAME: worker_schedule.v1.WorkerScheduleService
+      GRPC_PORT: 50051
+    networks:
+      - hsp-net
+
+  finance-service:
+    build:
+      context: .
+      dockerfile: mock_services/Dockerfile
+    environment:
+      SERVICE_NAME: finance-service
+      SERVICE_FULL_NAME: hsp.finance.v1.FinanceService
+      GRPC_PORT: 50051
+    networks:
+      - hsp-net
+
+networks:
+  hsp-net:
+    name: hsp-net
