@@ -382,9 +382,9 @@ class GatewayGrpcClients:
 
     async def dispatch_list_available_workers(self, payload: dict[str, Any], metadata: GrpcMetadata) -> dict[str, Any]:
         request = dispatch_pb2.ListAvailableWorkersRequest(
-            service_type=str(payload.get("service_type", "")),
-            region=str(payload.get("region", "")),
-            at_time=str(payload.get("at_time", "")),
+            service_type=str(payload.get("service_type") or ""),
+            region=str(payload.get("region") or ""),
+            at_time=str(payload.get("at_time") or ""),
             limit=_safe_int(payload.get("limit"), 20),
         )
         response = await self._dispatch_client.ListAvailableWorkers(

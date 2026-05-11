@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+import asyncio
 import time
 
 import jwt
+
+from app.config import get_settings
+from app.gateway.grpc_clients import GatewayGrpcClients, dispatch_pb2
 
 
 def make_token(role: str = "OWNER", sub: str = "u-900", email: str = "owner@example.com") -> str:
@@ -44,6 +48,32 @@ def test_dispatch_list_available_workers_should_forward_query_and_metadata(clien
     assert metadata["x-user-id"] == "u-900"
     assert metadata["x-user-role"] == "OWNER"
     assert metadata["x-auth-source"] == "gateway"
+
+
+def test_dispatch_list_available_workers_should_not_forward_none_at_time():
+    captured: dict[str, object] = {}
+
+    class FakeDispatchClient:
+        async def ListAvailableWorkers(self, request, metadata, timeout):
+            captured["request"] = request
+            captured["metadata"] = metadata
+            captured["timeout"] = timeout
+            return dispatch_pb2.ListAvailableWorkersResponse()
+
+    grpc_clients = GatewayGrpcClients(get_settings())
+    grpc_clients._dispatch_client = FakeDispatchClient()
+
+    async def run_test() -> None:
+        try:
+            await grpc_clients.dispatch_list_available_workers({"limit": 20, "at_time": None}, ())
+        finally:
+            await grpc_clients.close()
+
+    asyncio.run(run_test())
+
+    request = captured["request"]
+    assert request.at_time == ""
+    assert request.limit == 20
 
 
 def test_dispatch_manual_assign_without_token_returns_401(client):
