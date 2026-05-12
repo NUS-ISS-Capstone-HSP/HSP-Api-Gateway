@@ -1,7 +1,8 @@
 fastapi==0.115.2
 uvicorn[standard]==0.30.6
-grpcio==1.67.1
-grpcio-tools==1.67.1
+grpcio==1.78.0
+grpcio-tools==1.78.0
+protobuf==6.31.1
 PyJWT==2.9.0
 pydantic-settings==2.6.1
 pytest==8.3.3
