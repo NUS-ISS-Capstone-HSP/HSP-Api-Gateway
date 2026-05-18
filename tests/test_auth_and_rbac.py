@@ -35,6 +35,26 @@ def test_invalid_token_returns_401(client):
     assert data["code"] == "TOKEN_INVALID"
 
 
+def test_missing_required_claim_returns_401(client):
+    payload = {
+        "sub": "u-100",
+        "email": "u100@example.com",
+        "role": "OWNER",
+        "iss": "hsp-user-service",
+        "exp": int(time.time()) + 3600,
+    }
+    token = jwt.encode(payload, "replace_me", algorithm="HS256")
+
+    resp = client.get(
+        "/api/users/v1/profile",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert resp.status_code == 401
+    data = resp.json()
+    assert data["code"] == "TOKEN_INVALID"
+
+
 def test_worker_cannot_access_admin(client):
     token = make_token(role="WORKER")
 
