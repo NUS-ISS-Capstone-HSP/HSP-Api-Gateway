@@ -21,6 +21,7 @@ def set_env() -> Generator[None, None, None]:
     os.environ["ORDER_GRPC_TARGET"] = "order-service:50051"
     os.environ["DISPATCH_GRPC_TARGET"] = "dispatch-service:50051"
     os.environ["WORKER_SCHEDULE_GRPC_TARGET"] = "worker-schedule-service:50051"
+    os.environ["SERVICE_EXECUTION_GRPC_TARGET"] = "service-execution-service:50051"
     os.environ["FINANCE_GRPC_TARGET"] = "finance-service:50051"
     os.environ["GRPC_TIMEOUT_MS"] = "3000"
     get_settings.cache_clear()

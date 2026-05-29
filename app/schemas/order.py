@@ -49,7 +49,7 @@ class ListOrdersResponseModel(BaseModel):
 class UpdateOrderStatusBodyModel(BaseModel):
     target_status: str = Field(
         ...,
-        description="支持 CREATED/PENDING/ACCEPT/COMPLETE/PAID，或 proto 枚举名 ORDER_STATUS_*",
+        description="支持 CREATED/PENDING/ACCEPT/IN_SERVICE/COMPLETE/PAID，或 proto 枚举名 ORDER_STATUS_*",
         examples=["ACCEPT"],
     )
     assigned_worker_id: str | None = Field(default=None, examples=["worker-1001"])
@@ -57,3 +57,8 @@ class UpdateOrderStatusBodyModel(BaseModel):
 
 class UpdateOrderStatusResponseModel(BaseModel):
     order: OrderModel
+
+
+class CloseOrderRequestModel(BaseModel):
+    payment_id: str | None = Field(default=None, examples=["pay-1001"])
+    close_reason: str | None = Field(default=None, examples=["用户已付款，客服确认关单"])

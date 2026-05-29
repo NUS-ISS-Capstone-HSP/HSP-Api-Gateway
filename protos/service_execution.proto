@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package hsp.service_execution.v1;
+
+import "google/protobuf/struct.proto";
+
+service ServiceExecutionService {
+  rpc StartService(google.protobuf.Struct) returns (google.protobuf.Struct);
+  rpc CompleteService(google.protobuf.Struct) returns (google.protobuf.Struct);
+  rpc AddServicePhoto(google.protobuf.Struct) returns (google.protobuf.Struct);
+  rpc GetServiceRecord(google.protobuf.Struct) returns (google.protobuf.Struct);
+}

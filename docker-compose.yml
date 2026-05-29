@@ -13,6 +13,7 @@ services:
       - order-service
       - dispatch-service
       - worker-schedule-service
+      - service-execution-service
       - finance-service
     networks:
       - hsp-net
@@ -57,6 +58,17 @@ services:
     environment:
       SERVICE_NAME: worker-schedule-service
       SERVICE_FULL_NAME: worker_schedule.v1.WorkerScheduleService
+      GRPC_PORT: 50051
+    networks:
+      - hsp-net
+
+  service-execution-service:
+    build:
+      context: .
+      dockerfile: mock_services/Dockerfile
+    environment:
+      SERVICE_NAME: service-execution-service
+      SERVICE_FULL_NAME: hsp.service_execution.v1.ServiceExecutionService
       GRPC_PORT: 50051
     networks:
       - hsp-net

@@ -242,7 +242,14 @@ curl -i "http://127.0.0.1:8081/api/worker-schedule/v1/orders/ord-1001" \
 - `ORDER_GRPC_TARGET=order-service:50051`
 - `DISPATCH_GRPC_TARGET=dispatch-service:50051`
 - `WORKER_SCHEDULE_GRPC_TARGET=worker-schedule-service:50051`
+- `SERVICE_EXECUTION_GRPC_TARGET=service-execution-service:50051`
 - `FINANCE_GRPC_TARGET=finance-service:50051`
+
+## 完整 API 文档
+
+面向“客服派单 -> 工人确认 -> 履约 -> 客服收款 -> 关单”集成测试的完整接口说明见：
+
+- [API_DOCUMENTATION.md](API_DOCUMENTATION.md)
 
 ## 鉴权与 RBAC 规则
 

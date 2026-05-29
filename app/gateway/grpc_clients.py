@@ -44,6 +44,7 @@ _ORDER_STATUS_NAME_TO_ENUM = {
     "CREATED": order_pb2.ORDER_STATUS_CREATED,
     "PENDING": order_pb2.ORDER_STATUS_PENDING,
     "ACCEPT": order_pb2.ORDER_STATUS_ACCEPT,
+    "IN_SERVICE": getattr(order_pb2, "ORDER_STATUS_IN_SERVICE", order_pb2.ORDER_STATUS_ACCEPT),
     "COMPLETE": order_pb2.ORDER_STATUS_COMPLETE,
     "PAID": order_pb2.ORDER_STATUS_PAID,
 }
@@ -125,6 +126,9 @@ def _parse_order_status(value: Any) -> int:
         if normalized in _ORDER_STATUS_NAME_TO_ENUM:
             return _ORDER_STATUS_NAME_TO_ENUM[normalized]
         if normalized.startswith("ORDER_STATUS_"):
+            short_name = normalized.removeprefix("ORDER_STATUS_")
+            if short_name in _ORDER_STATUS_NAME_TO_ENUM:
+                return _ORDER_STATUS_NAME_TO_ENUM[short_name]
             try:
                 return order_pb2.OrderStatus.Value(normalized)
             except ValueError:
@@ -223,16 +227,22 @@ class GatewayGrpcClients:
         self._order_channel = grpc.aio.insecure_channel(settings.order_grpc_target)
         self._dispatch_channel = grpc.aio.insecure_channel(settings.dispatch_grpc_target)
         self._worker_schedule_channel = grpc.aio.insecure_channel(settings.worker_schedule_grpc_target)
+        self._service_execution_channel = grpc.aio.insecure_channel(settings.service_execution_grpc_target)
         self._finance_channel = grpc.aio.insecure_channel(settings.finance_grpc_target)
 
         self._user_client = user_pb2_grpc.UserAuthServiceStub(self._user_channel)
         self._order_client = order_pb2_grpc.OrderServiceStub(self._order_channel)
         self._dispatch_client = dispatch_pb2_grpc.DispatchServiceStub(self._dispatch_channel)
         self._worker_schedule_client = worker_schedule_pb2_grpc.WorkerScheduleServiceStub(self._worker_schedule_channel)
+        self._service_execution_client = GenericGrpcServiceClient(
+            self._service_execution_channel,
+            "hsp.service_execution.v1.ServiceExecutionService",
+            {"StartService", "CompleteService", "AddServicePhoto", "GetServiceRecord"},
+        )
         self._finance_client = GenericGrpcServiceClient(
             self._finance_channel,
             "hsp.finance.v1.FinanceService",
-            {"GetInvoice"},
+            {"GetInvoice", "CreatePayment", "ListOrderPayments"},
         )
 
     @property
@@ -244,6 +254,7 @@ class GatewayGrpcClients:
         await self._order_channel.close()
         await self._dispatch_channel.close()
         await self._worker_schedule_channel.close()
+        await self._service_execution_channel.close()
         await self._finance_channel.close()
 
     def _log_rpc_response(self, rpc_method: str, metadata: GrpcMetadata, response: dict[str, Any]) -> None:
@@ -532,4 +543,50 @@ class GatewayGrpcClients:
     async def finance_get_invoice(self, payload: dict[str, Any], metadata: GrpcMetadata) -> dict[str, Any]:
         response = await self._finance_client.call("GetInvoice", payload, metadata, self.timeout_seconds)
         self._log_rpc_response("hsp.finance.v1.FinanceService/GetInvoice", metadata, response)
+        return response
+
+    async def service_execution_start_service(
+        self,
+        payload: dict[str, Any],
+        metadata: GrpcMetadata,
+    ) -> dict[str, Any]:
+        response = await self._service_execution_client.call("StartService", payload, metadata, self.timeout_seconds)
+        self._log_rpc_response("hsp.service_execution.v1.ServiceExecutionService/StartService", metadata, response)
+        return response
+
+    async def service_execution_complete_service(
+        self,
+        payload: dict[str, Any],
+        metadata: GrpcMetadata,
+    ) -> dict[str, Any]:
+        response = await self._service_execution_client.call("CompleteService", payload, metadata, self.timeout_seconds)
+        self._log_rpc_response("hsp.service_execution.v1.ServiceExecutionService/CompleteService", metadata, response)
+        return response
+
+    async def service_execution_add_photo(
+        self,
+        payload: dict[str, Any],
+        metadata: GrpcMetadata,
+    ) -> dict[str, Any]:
+        response = await self._service_execution_client.call("AddServicePhoto", payload, metadata, self.timeout_seconds)
+        self._log_rpc_response("hsp.service_execution.v1.ServiceExecutionService/AddServicePhoto", metadata, response)
+        return response
+
+    async def service_execution_get_record(
+        self,
+        payload: dict[str, Any],
+        metadata: GrpcMetadata,
+    ) -> dict[str, Any]:
+        response = await self._service_execution_client.call("GetServiceRecord", payload, metadata, self.timeout_seconds)
+        self._log_rpc_response("hsp.service_execution.v1.ServiceExecutionService/GetServiceRecord", metadata, response)
+        return response
+
+    async def finance_create_payment(self, payload: dict[str, Any], metadata: GrpcMetadata) -> dict[str, Any]:
+        response = await self._finance_client.call("CreatePayment", payload, metadata, self.timeout_seconds)
+        self._log_rpc_response("hsp.finance.v1.FinanceService/CreatePayment", metadata, response)
+        return response
+
+    async def finance_list_order_payments(self, payload: dict[str, Any], metadata: GrpcMetadata) -> dict[str, Any]:
+        response = await self._finance_client.call("ListOrderPayments", payload, metadata, self.timeout_seconds)
+        self._log_rpc_response("hsp.finance.v1.FinanceService/ListOrderPayments", metadata, response)
         return response

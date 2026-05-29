@@ -18,14 +18,14 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + ' but the generated code in finance_pb2_grpc.py depends on'
+        + ' but the generated code in service_execution_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
     )
 
 
-class FinanceServiceStub(object):
+class ServiceExecutionServiceStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -34,75 +34,91 @@ class FinanceServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.GetInvoice = channel.unary_unary(
-                '/hsp.finance.v1.FinanceService/GetInvoice',
+        self.StartService = channel.unary_unary(
+                '/hsp.service_execution.v1.ServiceExecutionService/StartService',
                 request_serializer=google_dot_protobuf_dot_struct__pb2.Struct.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_struct__pb2.Struct.FromString,
                 _registered_method=True)
-        self.CreatePayment = channel.unary_unary(
-                '/hsp.finance.v1.FinanceService/CreatePayment',
+        self.CompleteService = channel.unary_unary(
+                '/hsp.service_execution.v1.ServiceExecutionService/CompleteService',
                 request_serializer=google_dot_protobuf_dot_struct__pb2.Struct.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_struct__pb2.Struct.FromString,
                 _registered_method=True)
-        self.ListOrderPayments = channel.unary_unary(
-                '/hsp.finance.v1.FinanceService/ListOrderPayments',
+        self.AddServicePhoto = channel.unary_unary(
+                '/hsp.service_execution.v1.ServiceExecutionService/AddServicePhoto',
+                request_serializer=google_dot_protobuf_dot_struct__pb2.Struct.SerializeToString,
+                response_deserializer=google_dot_protobuf_dot_struct__pb2.Struct.FromString,
+                _registered_method=True)
+        self.GetServiceRecord = channel.unary_unary(
+                '/hsp.service_execution.v1.ServiceExecutionService/GetServiceRecord',
                 request_serializer=google_dot_protobuf_dot_struct__pb2.Struct.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_struct__pb2.Struct.FromString,
                 _registered_method=True)
 
 
-class FinanceServiceServicer(object):
+class ServiceExecutionServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def GetInvoice(self, request, context):
+    def StartService(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def CreatePayment(self, request, context):
+    def CompleteService(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def ListOrderPayments(self, request, context):
+    def AddServicePhoto(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetServiceRecord(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_FinanceServiceServicer_to_server(servicer, server):
+def add_ServiceExecutionServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'GetInvoice': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetInvoice,
+            'StartService': grpc.unary_unary_rpc_method_handler(
+                    servicer.StartService,
                     request_deserializer=google_dot_protobuf_dot_struct__pb2.Struct.FromString,
                     response_serializer=google_dot_protobuf_dot_struct__pb2.Struct.SerializeToString,
             ),
-            'CreatePayment': grpc.unary_unary_rpc_method_handler(
-                    servicer.CreatePayment,
+            'CompleteService': grpc.unary_unary_rpc_method_handler(
+                    servicer.CompleteService,
                     request_deserializer=google_dot_protobuf_dot_struct__pb2.Struct.FromString,
                     response_serializer=google_dot_protobuf_dot_struct__pb2.Struct.SerializeToString,
             ),
-            'ListOrderPayments': grpc.unary_unary_rpc_method_handler(
-                    servicer.ListOrderPayments,
+            'AddServicePhoto': grpc.unary_unary_rpc_method_handler(
+                    servicer.AddServicePhoto,
+                    request_deserializer=google_dot_protobuf_dot_struct__pb2.Struct.FromString,
+                    response_serializer=google_dot_protobuf_dot_struct__pb2.Struct.SerializeToString,
+            ),
+            'GetServiceRecord': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetServiceRecord,
                     request_deserializer=google_dot_protobuf_dot_struct__pb2.Struct.FromString,
                     response_serializer=google_dot_protobuf_dot_struct__pb2.Struct.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'hsp.finance.v1.FinanceService', rpc_method_handlers)
+            'hsp.service_execution.v1.ServiceExecutionService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('hsp.finance.v1.FinanceService', rpc_method_handlers)
+    server.add_registered_method_handlers('hsp.service_execution.v1.ServiceExecutionService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class FinanceService(object):
+class ServiceExecutionService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def GetInvoice(request,
+    def StartService(request,
             target,
             options=(),
             channel_credentials=None,
@@ -115,7 +131,7 @@ class FinanceService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/hsp.finance.v1.FinanceService/GetInvoice',
+            '/hsp.service_execution.v1.ServiceExecutionService/StartService',
             google_dot_protobuf_dot_struct__pb2.Struct.SerializeToString,
             google_dot_protobuf_dot_struct__pb2.Struct.FromString,
             options,
@@ -129,7 +145,7 @@ class FinanceService(object):
             _registered_method=True)
 
     @staticmethod
-    def CreatePayment(request,
+    def CompleteService(request,
             target,
             options=(),
             channel_credentials=None,
@@ -142,7 +158,7 @@ class FinanceService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/hsp.finance.v1.FinanceService/CreatePayment',
+            '/hsp.service_execution.v1.ServiceExecutionService/CompleteService',
             google_dot_protobuf_dot_struct__pb2.Struct.SerializeToString,
             google_dot_protobuf_dot_struct__pb2.Struct.FromString,
             options,
@@ -156,7 +172,7 @@ class FinanceService(object):
             _registered_method=True)
 
     @staticmethod
-    def ListOrderPayments(request,
+    def AddServicePhoto(request,
             target,
             options=(),
             channel_credentials=None,
@@ -169,7 +185,34 @@ class FinanceService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/hsp.finance.v1.FinanceService/ListOrderPayments',
+            '/hsp.service_execution.v1.ServiceExecutionService/AddServicePhoto',
+            google_dot_protobuf_dot_struct__pb2.Struct.SerializeToString,
+            google_dot_protobuf_dot_struct__pb2.Struct.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetServiceRecord(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/hsp.service_execution.v1.ServiceExecutionService/GetServiceRecord',
             google_dot_protobuf_dot_struct__pb2.Struct.SerializeToString,
             google_dot_protobuf_dot_struct__pb2.Struct.FromString,
             options,

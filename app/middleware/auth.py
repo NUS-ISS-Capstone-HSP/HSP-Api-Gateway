@@ -102,3 +102,12 @@ def _check_rbac(path: str, identity: IdentityContext) -> None:
 
     if path == "/api/users/v1/orders/dispatch" and role not in {"CUSTOMER_SERVICE", "OWNER"}:
         raise AppError(code="FORBIDDEN", message="Role cannot dispatch orders", status_code=403)
+
+    if path.startswith("/api/finance/v1/orders/") and role not in {"CUSTOMER_SERVICE", "OWNER"}:
+        raise AppError(code="FORBIDDEN", message="Role cannot manage order payments", status_code=403)
+
+    if path.startswith("/api/orders/v1/orders/") and path.endswith("/close") and role not in {
+        "CUSTOMER_SERVICE",
+        "OWNER",
+    }:
+        raise AppError(code="FORBIDDEN", message="Role cannot close orders", status_code=403)

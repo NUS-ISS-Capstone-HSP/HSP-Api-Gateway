@@ -6,4 +6,6 @@ import "google/protobuf/struct.proto";
 
 service FinanceService {
   rpc GetInvoice(google.protobuf.Struct) returns (google.protobuf.Struct);
+  rpc CreatePayment(google.protobuf.Struct) returns (google.protobuf.Struct);
+  rpc ListOrderPayments(google.protobuf.Struct) returns (google.protobuf.Struct);
 }

@@ -26,6 +26,10 @@ class Settings(BaseSettings):
         default="worker-schedule-service:50051",
         alias="WORKER_SCHEDULE_GRPC_TARGET",
     )
+    service_execution_grpc_target: str = Field(
+        default="service-execution-service:50051",
+        alias="SERVICE_EXECUTION_GRPC_TARGET",
+    )
     finance_grpc_target: str = Field(default="finance-service:50051", alias="FINANCE_GRPC_TARGET")
 
     grpc_timeout_ms: int = Field(default=3000, alias="GRPC_TIMEOUT_MS")
