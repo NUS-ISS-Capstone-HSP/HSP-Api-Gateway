@@ -252,6 +252,39 @@ def test_service_execution_not_found_falls_back_and_can_be_verified(client):
     assert record_resp.json()["record"]["order_id"] == "ord-1001"
 
 
+def test_service_execution_unavailable_falls_back_for_core_flow(client):
+    async def fake_start(payload, metadata):
+        raise FakeRpcError(grpc.StatusCode.UNAVAILABLE, "service execution unavailable")
+
+    async def fake_complete(payload, metadata):
+        raise FakeRpcError(grpc.StatusCode.UNAVAILABLE, "service execution unavailable")
+
+    client.app.state.grpc_clients.service_execution_start_service = fake_start
+    client.app.state.grpc_clients.service_execution_complete_service = fake_complete
+
+    token = make_token(role="WORKER", sub="worker-1001")
+    start_resp = client.post(
+        "/api/service-execution/v1/orders/ord-1001/start",
+        json={"worker_id": "worker-1001", "started_at": "2026-04-08T10:05:00+08:00"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    complete_resp = client.post(
+        "/api/service-execution/v1/orders/ord-1001/complete",
+        json={"worker_id": "worker-1001", "actual_duration_minutes": 125},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    record_resp = client.get(
+        "/api/service-execution/v1/orders/ord-1001/record",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert start_resp.status_code == 200
+    assert complete_resp.status_code == 200
+    assert complete_resp.json()["record"]["status"] == "COMPLETE"
+    assert record_resp.status_code == 200
+    assert record_resp.json()["record"]["status"] == "COMPLETE"
+
+
 def test_payment_not_found_falls_back_and_can_be_listed(client):
     async def fake_payment(payload, metadata):
         raise FakeRpcError(grpc.StatusCode.NOT_FOUND, "payment service has no record")
